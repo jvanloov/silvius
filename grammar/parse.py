@@ -126,13 +126,47 @@ class CoreParser(GenericParser):
             movement ::= down   repeat
             movement ::= left   repeat
             movement ::= right  repeat
+            movement ::= back   repeat
+            movement ::= scroll repeat
+            movement ::= skip_cmd left  repeat
+            movement ::= skip_cmd right repeat
         '''
-        if args[1] != None:
+        if args[0].type == 'skip':
+            # TODO: this is Emacs specific; refactor?
+            movement = AST('chain', None, [
+                AST("raw_char", [ 'Escape' ] ),
+                AST("movement", [ scan.Token(args[1].type) ] )
+                ])
+            if len(args) > 2 and args[2] != None:
+                args[0] = AST('repeat', [ args[2] ], [ movement ] )
+            else:
+                args[0] = movement
+            return args[0]
+        elif args[1] != None:
+            movement = args[0]
+            if movement.type == "back":
+                movement = scan.Token("pageup")
+            elif movement.type == "scroll":
+                movement = scan.Token("pagedown")
             return AST('repeat', [ args[1] ], [
-                AST('movement', [ args[0] ])
+                AST('movement', [ movement ])
             ])
         else:
-            return AST('movement', [ args[0] ])
+            movement = args[0]
+            if movement.type == "back":
+                movement = scan.Token("pageup")
+            elif movement.type == "scroll":
+                movement = scan.Token("pagedown")
+            return AST('movement', [ movement ])
+
+    def p_skip_cmd(self, args):
+        '''
+            skip_cmd ::= skip
+            skip_cmd ::= sky
+            skip_cmd ::= skipper
+        '''
+        return AST('skip')
+    
 
     def p_repeat(self, args):
         '''
