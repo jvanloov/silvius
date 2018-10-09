@@ -118,6 +118,7 @@ class CoreParser(GenericParser):
             single_command ::= word_sentence
             single_command ::= word_phrase
             single_command ::= shell_cmd
+            single_command ::= emacs_cmd
         '''
         return args[0]
 
@@ -532,6 +533,66 @@ class CoreParser(GenericParser):
             shell_name ::= sherrill
         '''
         return args[0]
+
+
+    def p_emacs_cmd(self, args):
+        '''
+            emacs_cmd ::= emacs_name scratch
+            emacs_cmd ::= emacs_name function
+            emacs_cmd ::= emacs_name point
+            emacs_cmd ::= emacs_name grab
+            emacs_cmd ::= emacs_name save
+            emacs_cmd ::= emacs_name switch
+            emacs_cmd ::= emacs_name window
+            emacs_cmd ::= emacs_name split
+            emacs_cmd ::= emacs_name merge
+            emacs_cmd ::= emacs_name cancel
+            emacs_cmd ::= emacs_name yankee
+        '''
+        sequence = []
+        if args[1].type == 'scratch':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'x'] ) ] ))
+            sequence.append(AST("char", [ 'u'] ))
+        elif args[1].type == 'function':
+            sequence.append(AST('raw_char', [ 'Escape'] ))
+            sequence.append(AST('char', [ 'x' ] ))
+        elif args[1].type == 'point':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("raw_char", [ 'space'] ) ] ))
+        elif args[1].type == 'grab':
+            sequence.append(AST('raw_char', [ 'Escape'] ))
+            sequence.append(AST('char', [ 'w' ] ))
+        elif args[1].type == 'save':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'x'] ) ] ))
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 's'] ) ] ))
+        elif args[1].type == 'switch':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'x'] ) ] ))
+            sequence.append(AST("char", [ 'b'] ))
+        elif args[1].type == 'window':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'x'] ) ] ))
+            sequence.append(AST("char", [ 'o'] ))
+        elif args[1].type == 'split':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'x'] ) ] ))
+            sequence.append(AST('char', [ '2'] ))
+        elif args[1].type == 'merge':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'x'] ) ] ))
+            sequence.append(AST('char', [ '1'] ))
+        elif args[1].type == 'cancel':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'g'] ) ] ))
+        elif args[1].type == 'yankee':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'y'] ) ] ))
+        return AST("chain", None, sequence)
+
+    def p_emacs_name(self, args):
+        '''
+            emacs_name ::= he marks
+            emacs_name ::= he makes
+            emacs_name ::= he merck's
+            emacs_name ::= he maps
+            emacs_name ::= he much
+            emacs_name ::= he mutters
+            emacs_name ::= he months
+        '''
+        return args[1]
     
         
 class SingleInputParser(CoreParser):
