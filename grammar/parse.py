@@ -117,6 +117,7 @@ class CoreParser(GenericParser):
             single_command ::= english
             single_command ::= word_sentence
             single_command ::= word_phrase
+            single_command ::= shell_cmd
         '''
         return args[0]
 
@@ -506,6 +507,33 @@ class CoreParser(GenericParser):
             return args[0].extra
         return args[0].type
 
+    def p_shell_cmd(self, args):
+        '''
+            shell_cmd ::= shell_name change
+            shell_cmd ::= shell_name list
+        '''
+        value = {
+            'change' : 'cd ',
+            'list':    'ls -la '
+        }
+        sequence = []
+        for ch in value[args[1].type]:
+            if ch == ' ':
+                sequence.append(AST("raw_char", [ 'space'] ))
+            elif ch == '-':
+                sequence.append(AST("raw_char", [ 'minus'] ))
+            else:
+                sequence.append(AST("char", [ ch ]))
+        return AST("chain", None, sequence)
+    
+    def p_shell_name(self, args):
+        '''
+            shell_name ::= cheryl
+            shell_name ::= sherrill
+        '''
+        return args[0]
+    
+        
 class SingleInputParser(CoreParser):
     def __init__(self):
         # if you have the issue that commands fail because spurious
