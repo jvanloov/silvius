@@ -1,5 +1,6 @@
 # Parser, based on John Aycock's SPARK examples
 
+from copy import deepcopy
 from spark import GenericParser
 from spark import GenericASTBuilder
 from ast import AST
@@ -117,6 +118,7 @@ class CoreParser(GenericParser):
             single_command ::= english
             single_command ::= word_sentence
             single_command ::= word_phrase
+            single_command ::= word_camel
             single_command ::= shell_cmd
             single_command ::= emacs_cmd
         '''
@@ -508,6 +510,36 @@ class CoreParser(GenericParser):
             return args[0].extra
         return args[0].type
 
+    # camelCase rule, from Tomas Kanocz' Silvius fork
+    # (https://github.com/KanoczTomas/silvius)
+    def p_word_camel(self, args):
+        '''
+            word_camel ::= word_camel_name word_repeat
+        '''
+        #print dir(args[1])
+        if(len(args[1].children) > 0):
+            camelCase = ''
+            first = True #we use it not to capitalise the first character
+            for a in args[1].children:
+                if first:
+                    camelCase += a.meta
+                    first = False
+                else:
+                    camelCase += a.meta.capitalize()
+                    
+            args[1].children[0].meta = camelCase
+            child = deepcopy(args[1].children[0])
+            del args[1].children #we throw away all childes
+            args[1].children = [child] #insert only the 1 generated and having the camelCase meta
+        
+        return args[1]
+    
+    def p_word_camel_name(self, args):
+        '''
+            word_camel_name ::= campbell
+            word_camel_name ::= camel
+        '''
+    
     def p_shell_cmd(self, args):
         '''
             shell_cmd ::= shell_name change

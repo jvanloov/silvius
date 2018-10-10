@@ -31,7 +31,7 @@
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress shift+A`
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress y e s t e r d a y`
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress i t spc i s spc d a r k spc o u t s i d e`
-`C:\Tools\nircmd-x64\nircmd.exe sendkeypress I t spc i s spc d a r k spc o u t s i d e`
+`C:\Tools\nircmd-x64\nircmd.exe sendkeypress shift+i t spc i s spc d a r k spc o u t s i d e`
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress c d spc 0xbe 0xbe 0x0d`
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress backspace backspace backspace`
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress backspace backspace backspace`
@@ -44,3 +44,4 @@
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress 4 0 2 8 1 5`
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress w i n d o w spc s e n t e n c e spc p h r a s e`
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress H e l l o spc t h e r e 0xbc spc h o w spc a r e spc y o u shift+0xbf`
+`C:\Tools\nircmd-x64\nircmd.exe sendkeypress o n e shift+t w o shift+t h r e e`

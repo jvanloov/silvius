@@ -227,6 +227,9 @@ class NirCmdAutomator(Automator):
     def transform_key(self, k):
         if k.lower() in self.keymaps:
             return self.keymaps[k.lower()][self.keymap].lower()
+        elif k in string.ascii_uppercase:
+            k = "shift+" + k.lower()
+            return k
         else:
             return k    
     
