@@ -1,7 +1,7 @@
 up
 down two
 number nine
-arch bravo charlie delta echo fox golf
+arch bravo charlie delta echo fox greece
 act
 colon
 semicolon

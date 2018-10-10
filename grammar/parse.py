@@ -336,7 +336,7 @@ class CoreParser(GenericParser):
             letter ::= eco
             letter ::= echo
             letter ::= fox
-            letter ::= golf
+            letter ::= greece
             letter ::= hotel
             letter ::= india
             letter ::= julia
