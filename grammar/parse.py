@@ -580,6 +580,8 @@ class CoreParser(GenericParser):
             emacs_cmd ::= emacs_name merge
             emacs_cmd ::= emacs_name cancel
             emacs_cmd ::= emacs_name yankee
+            emacs_cmd ::= emacs_name center
+            emacs_cmd ::= emacs_name loop
         '''
         sequence = []
         if args[1].type == 'scratch':
@@ -612,6 +614,10 @@ class CoreParser(GenericParser):
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'g'] ) ] ))
         elif args[1].type == 'yankee':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'y'] ) ] ))
+        elif args[1].type == 'center':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'l'] ) ] ))
+        elif args[1].type == 'loop':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'u'] ) ] ))
         return AST("chain", None, sequence)
 
     def p_emacs_name(self, args):
