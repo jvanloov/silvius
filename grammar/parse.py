@@ -572,7 +572,7 @@ class CoreParser(GenericParser):
             emacs_cmd ::= emacs_name scratch
             emacs_cmd ::= emacs_name function
             emacs_cmd ::= emacs_name point
-            emacs_cmd ::= emacs_name grab
+            emacs_cmd ::= emacs_name remember
             emacs_cmd ::= emacs_name save
             emacs_cmd ::= emacs_name switch
             emacs_cmd ::= emacs_name window
@@ -581,7 +581,10 @@ class CoreParser(GenericParser):
             emacs_cmd ::= emacs_name cancel
             emacs_cmd ::= emacs_name yankee
             emacs_cmd ::= emacs_name center
-            emacs_cmd ::= emacs_name loop
+            emacs_cmd ::= emacs_name many
+            emacs_cmd ::= emacs_name grab
+            emacs_cmd ::= emacs_name begin
+            emacs_cmd ::= emacs_name and
         '''
         sequence = []
         if args[1].type == 'scratch':
@@ -592,7 +595,7 @@ class CoreParser(GenericParser):
             sequence.append(AST('char', [ 'x' ] ))
         elif args[1].type == 'point':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("raw_char", [ 'space'] ) ] ))
-        elif args[1].type == 'grab':
+        elif args[1].type == 'remember':
             sequence.append(AST('raw_char', [ 'Escape'] ))
             sequence.append(AST('char', [ 'w' ] ))
         elif args[1].type == 'save':
@@ -616,16 +619,24 @@ class CoreParser(GenericParser):
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'y'] ) ] ))
         elif args[1].type == 'center':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'l'] ) ] ))
-        elif args[1].type == 'loop':
+        elif args[1].type == 'many':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'u'] ) ] ))
+        elif args[1].type == 'grab':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'w'] ) ] ))
+        elif args[1].type == 'begin':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'a'] ) ] ))
+        elif args[1].type == 'and':  # 'end'
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'e'] ) ] ))
         return AST("chain", None, sequence)
 
     def p_emacs_name(self, args):
         '''
             emacs_name ::= he marks
+            emacs_name ::= he markets
             emacs_name ::= he makes
             emacs_name ::= he merck's
             emacs_name ::= he maps
+            emacs_name ::= he max
             emacs_name ::= he much
             emacs_name ::= he mutters
             emacs_name ::= he months
