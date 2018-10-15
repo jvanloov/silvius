@@ -3,6 +3,7 @@
 from spark import GenericParser
 from spark import GenericASTBuilder
 from ast import AST
+import scan
 
 class GrammaticalError(Exception):
     def __init__(self, string):
@@ -11,8 +12,63 @@ class GrammaticalError(Exception):
         return self.string
 
 class CoreParser(GenericParser):
+
     def __init__(self, start):
+        # check if we have to add terminal rules, and
+        # do so if the list of terminals is known 
+        self.install_terminal_rules()
+        # initialize and set up the grammar rules
         GenericParser.__init__(self, start)
+
+    # In our grammar, the token type ANY does not match any of the other
+    # token types. In some cases, this is not the desired behavior, e.g. for
+    # "word <word>" you want <word> to be able to be "five" or "sentence" or
+    # any other word that may have been used as a terminal in the grammar.
+    # This becomes more of an issue as you add macros, and more words become
+    # reserved.
+    # We can work around this limitation by adding rules for terminals
+    # that we want to allow; however, with many terminals this will
+    # quickly become infeasible.
+    # The function and function decorator below work together to automate this.
+    # (The decorator is needed to modify the docstring programmatically.)
+    # We rely on the fact that in main.py, we already collect a list of
+    # terminals (using find_terminals()). This does mean, however, that we
+    # have to instantiate the parser twice: first in "basic" form, which is
+    # used to collect the terminals, and then again in "decorated" form, where
+    # we automatically add the desired terminal rules.
+        
+    def install_terminal_rules(self):
+        # if we have a list of terminals available: walk all rules, and see
+        # if they were annotated with @add_rules_for_terminals. If so, we add
+        # new rules based on the template for that rule and the terminals.
+        try:
+            if scan.keywords is not None:
+                for item in CoreParser.__dict__:
+                    if item.startswith("p_"):
+                        function = CoreParser.__dict__[item]
+                        try:
+                            # this will trigger an AttributeError
+                            # for functions that were not annotated:
+                            template = function._rule_template
+                            for kw in scan.keywords:
+                                function.__doc__ += \
+                                    (template.format(kw) + "\n")
+                        except AttributeError:
+                            pass
+        except AttributeError:
+            pass
+
+    # function decorator: adding @add_rules_for_termination("<rule_template>")
+    # before a function declaration will add the given rule template
+    # as a new attribute to the function.
+    # This is used to signal that for this function, we have to add a new rule
+    # for each terminal, so that the terminal can be used in the spoken text.
+    def add_rules_for_terminals(rule_template):
+        def add_attrs(func):
+            func._rule_template = rule_template
+            return func
+        return add_attrs
+
 
     def typestring(self, token):
         return token.type
@@ -347,10 +403,13 @@ class CoreParser(GenericParser):
         else:
             return AST('mod_plus_key', [ value[args[0].type] ], [ args[1] ] )
 
+    @add_rules_for_terminals("english ::= word {}")
     def p_english(self, args):
         '''
             english ::= word ANY
         '''
+        if args[1].type != 'ANY':
+            return AST('sequence', [ args[1].type ])
         return AST('sequence', [ args[1].extra ])
 
     def p_word_sentence(self, args):
@@ -379,21 +438,10 @@ class CoreParser(GenericParser):
             args[1].children.insert(0, AST('null', args[0]))
             return args[1]
 
+    @add_rules_for_terminals("raw_word ::= {}")
     def p_raw_word(self, args):
         '''
             raw_word ::= ANY
-            raw_word ::= zero
-            raw_word ::= one
-            raw_word ::= two
-            raw_word ::= three
-            raw_word ::= four
-            raw_word ::= five
-            raw_word ::= six
-            raw_word ::= seven
-            raw_word ::= eight
-            raw_word ::= nine
-            raw_word ::= to
-            raw_word ::= for
         '''
         if(args[0].type == 'ANY'):
             return args[0].extra

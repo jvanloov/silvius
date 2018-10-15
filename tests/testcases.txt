@@ -42,3 +42,4 @@ control space
 control left
 number twenty five
 number four hundred two thousand eight hundred fifteen
+phrase window sentence phrase

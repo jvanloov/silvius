@@ -16,8 +16,14 @@ if __name__ == '__main__':
     else:
         f = sys.stdin
 
+    # The parser is instantiated twice: once to allow
+    # the collection of terminals from the instantiated
+    # parser (in find_keywords), and then again, augmented
+    # with additional rules, created automatically from the
+    # set of terminals.
     parser = SingleInputParser()
     find_keywords(parser)  # init lexer
+    parser = SingleInputParser() 
 
     while True:
         line = f.readline()
