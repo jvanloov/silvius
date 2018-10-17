@@ -50,7 +50,8 @@ class CoreParser(GenericParser):
                             # this will trigger an AttributeError
                             # for functions that were not annotated:
                             template = function._rule_template
-                            for kw in scan.keywords:
+                            exclusions = function._exclusions
+                            for kw in set(scan.keywords) - set(exclusions):
                                 function.__doc__ += \
                                     (template.format(kw) + "\n")
                         except AttributeError:
@@ -63,9 +64,10 @@ class CoreParser(GenericParser):
     # as a new attribute to the function.
     # This is used to signal that for this function, we have to add a new rule
     # for each terminal, so that the terminal can be used in the spoken text.
-    def add_rules_for_terminals(rule_template):
+    def add_rules_for_terminals(rule_template, exclusions=[]):
         def add_attrs(func):
             func._rule_template = rule_template
+            func._exclusions = exclusions
             return func
         return add_attrs
 
@@ -438,7 +440,15 @@ class CoreParser(GenericParser):
             args[1].children.insert(0, AST('null', args[0]))
             return args[1]
 
-    @add_rules_for_terminals("raw_word ::= {}")
+    # 'exclusions' contains the terminals that should continue to be
+    # treated as commands. As it is, the list is somewhat arbitrary;
+    # it contains modifier keys and a subset of the special characters from
+    # the "p_character" rule. Modify as desired.
+    @add_rules_for_terminals("raw_word ::= {}", exclusions = \
+                             ['control', 'alt', 'alternative',
+                              'colon', 'semicolon', 'bang', 'hash', 'percent',
+                              'ampersand', 'star', 'minus', 'underscore', 'plus',
+                              'backslash', 'question', 'comma'])
     def p_raw_word(self, args):
         '''
             raw_word ::= ANY
