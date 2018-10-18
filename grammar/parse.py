@@ -132,10 +132,10 @@ class CoreParser(GenericParser):
             movement ::= right  repeat
             movement ::= back   repeat
             movement ::= scroll repeat
-            movement ::= skip_cmd left  repeat
-            movement ::= skip_cmd right repeat
+            movement ::= jump_cmd left  repeat
+            movement ::= jump_cmd right repeat
         '''
-        if args[0].type == 'skip':
+        if args[0].type == 'jump':
             # TODO: this is Emacs specific; refactor?
             movement = AST('chain', None, [
                 AST("raw_char", [ 'Escape' ] ),
@@ -163,13 +163,11 @@ class CoreParser(GenericParser):
                 movement = scan.Token("pagedown")
             return AST('movement', [ movement ])
 
-    def p_skip_cmd(self, args):
+    def p_jump_cmd(self, args):
         '''
-            skip_cmd ::= skip
-            skip_cmd ::= sky
-            skip_cmd ::= skipper
+            jump_cmd ::= jump
         '''
-        return AST('skip')
+        return AST('jump')
     
 
     def p_repeat(self, args):
@@ -585,6 +583,7 @@ class CoreParser(GenericParser):
             emacs_cmd ::= emacs_name grab
             emacs_cmd ::= emacs_name begin
             emacs_cmd ::= emacs_name and
+            emacs_cmd ::= emacs_name eat
         '''
         sequence = []
         if args[1].type == 'scratch':
@@ -627,21 +626,16 @@ class CoreParser(GenericParser):
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'a'] ) ] ))
         elif args[1].type == 'and':  # 'end'
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'e'] ) ] ))
+        elif args[1].type == 'eat':
+            sequence.append(AST('raw_char', [ 'Escape'] ))
+            sequence.append(AST("char", [ 'd'] ))
         return AST("chain", None, sequence)
 
     def p_emacs_name(self, args):
         '''
-            emacs_name ::= he marks
-            emacs_name ::= he markets
-            emacs_name ::= he makes
-            emacs_name ::= he merck's
-            emacs_name ::= he maps
-            emacs_name ::= he max
-            emacs_name ::= he much
-            emacs_name ::= he mutters
-            emacs_name ::= he months
+            emacs_name ::= last
         '''
-        return args[1]
+        return args[0]
     
         
 class SingleInputParser(CoreParser):
