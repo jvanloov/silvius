@@ -4,6 +4,7 @@ from copy import deepcopy
 from spark import GenericParser
 from spark import GenericASTBuilder
 from ast import AST
+from scan import Token
 
 class GrammaticalError(Exception):
     def __init__(self, string):
@@ -139,7 +140,7 @@ class CoreParser(GenericParser):
             # TODO: this is Emacs specific; refactor?
             movement = AST('chain', None, [
                 AST("raw_char", [ 'Escape' ] ),
-                AST("movement", [ scan.Token(args[1].type) ] )
+                AST("movement", [ Token(args[1].type) ] )
                 ])
             if len(args) > 2 and args[2] != None:
                 args[0] = AST('repeat', [ args[2] ], [ movement ] )
@@ -149,18 +150,18 @@ class CoreParser(GenericParser):
         elif args[1] != None:
             movement = args[0]
             if movement.type == "back":
-                movement = scan.Token("pageup")
+                movement = Token("pageup")
             elif movement.type == "scroll":
-                movement = scan.Token("pagedown")
+                movement = Token("pagedown")
             return AST('repeat', [ args[1] ], [
                 AST('movement', [ movement ])
             ])
         else:
             movement = args[0]
             if movement.type == "back":
-                movement = scan.Token("pageup")
+                movement = Token("pageup")
             elif movement.type == "scroll":
-                movement = scan.Token("pagedown")
+                movement = Token("pagedown")
             return AST('movement', [ movement ])
 
     def p_jump_cmd(self, args):
@@ -584,6 +585,8 @@ class CoreParser(GenericParser):
             emacs_cmd ::= emacs_name begin
             emacs_cmd ::= emacs_name and
             emacs_cmd ::= emacs_name eat
+            emacs_cmd ::= emacs_name close
+            emacs_cmd ::= emacs_name search
         '''
         sequence = []
         if args[1].type == 'scratch':
@@ -629,6 +632,11 @@ class CoreParser(GenericParser):
         elif args[1].type == 'eat':
             sequence.append(AST('raw_char', [ 'Escape'] ))
             sequence.append(AST("char", [ 'd'] ))
+        elif args[1].type == 'close':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'x'] ) ] ))
+            sequence.append(AST('char', [ 'k'] ))
+        elif args[1].type == 'search':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 's'] ) ] ))
         return AST("chain", None, sequence)
 
     def p_emacs_name(self, args):
