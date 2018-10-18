@@ -3,7 +3,6 @@
 from spark import GenericParser
 from spark import GenericASTBuilder
 from ast import AST
-import scan
 
 class GrammaticalError(Exception):
     def __init__(self, string):
@@ -13,12 +12,31 @@ class GrammaticalError(Exception):
 
 class CoreParser(GenericParser):
 
+    terminals = []
+
     def __init__(self, start):
-        # check if we have to add terminal rules, and
-        # do so if the list of terminals is known 
-        self.install_terminal_rules()
         # initialize and set up the grammar rules
         GenericParser.__init__(self, start)
+        # after the "base" initialization, collect all terminals
+        visited = {}
+        self.find_terminals(self.rules, visited, 'START', self.terminals)
+        self.terminals = list(set(self.terminals))  # remove duplicates
+        # add terminal rules if needed
+        self.install_terminal_rules()
+        # re-initialize the parser rules
+        GenericParser.__init__(self, start)
+
+    # collect all terminals from the grammar rules
+    def find_terminals(self, rules, visited, which, found):
+        if which in visited: return
+        visited[which] = 1
+        for r in rules[which]:
+            (name, tokens) = r
+            for t in tokens:
+                if t in rules:
+                    self.find_terminals(rules, visited, t, found)
+                elif t != 'END' and t != 'ANY' and t != '|-':
+                    found.append(t)
 
     # In our grammar, the token type ANY does not match any of the other
     # token types. In some cases, this is not the desired behavior, e.g. for
@@ -31,33 +49,25 @@ class CoreParser(GenericParser):
     # quickly become infeasible.
     # The function and function decorator below work together to automate this.
     # (The decorator is needed to modify the docstring programmatically.)
-    # We rely on the fact that in main.py, we already collect a list of
-    # terminals (using find_terminals()). This does mean, however, that we
-    # have to instantiate the parser twice: first in "basic" form, which is
-    # used to collect the terminals, and then again in "decorated" form, where
-    # we automatically add the desired terminal rules.
-        
+
     def install_terminal_rules(self):
         # if we have a list of terminals available: walk all rules, and see
         # if they were annotated with @add_rules_for_terminals. If so, we add
         # new rules based on the template for that rule and the terminals.
-        try:
-            if scan.keywords is not None:
-                for item in CoreParser.__dict__:
-                    if item.startswith("p_"):
-                        function = CoreParser.__dict__[item]
-                        try:
-                            # this will trigger an AttributeError
-                            # for functions that were not annotated:
-                            template = function._rule_template
-                            exclusions = function._exclusions
-                            for kw in set(scan.keywords) - set(exclusions):
-                                function.__doc__ += \
-                                    (template.format(kw) + "\n")
-                        except AttributeError:
-                            pass
-        except AttributeError:
-            pass
+        if len(self.terminals) > 0:
+            for item in CoreParser.__dict__:
+                if item.startswith("p_"):
+                    function = CoreParser.__dict__[item]
+                    try:
+                        # this will trigger an AttributeError
+                        # for functions that were not annotated:
+                        template = function._rule_template
+                        exclusions = function._exclusions
+                        for kw in set(self.terminals) - set(exclusions):
+                            function.__doc__ += \
+                                (template.format(kw) + "\n")
+                    except AttributeError:
+                        pass
 
     # function decorator: adding @add_rules_for_termination("<rule_template>")
     # before a function declaration will add the given rule template
