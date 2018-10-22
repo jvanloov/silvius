@@ -7,6 +7,7 @@ from ast import AST
 # subgrammars are loaded from the grammars/ subpackage
 from grammars import numbers
 from grammars import english
+from grammars import yesno
 
 class GrammaticalError(Exception):
     def __init__(self, string):
@@ -20,7 +21,8 @@ class GrammaticalError(Exception):
 # 'add_subgrammar' from their __init__ methods.
 class CoreParser(GenericParser,
                  numbers.NumberGrammarMixin,
-                 english.EnglishGrammarMixin):
+                 english.EnglishGrammarMixin,
+                 yesno.YesNoGrammarMixin):
 
     terminals = []
 
