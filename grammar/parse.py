@@ -9,6 +9,9 @@ from ast import AST
 from grammars import numbers
 from grammars import english
 from grammars import yesno
+from grammars import camelcase
+from grammars import shell
+from grammars import emacs
 
 class GrammaticalError(Exception):
     def __init__(self, string):
@@ -23,7 +26,10 @@ class GrammaticalError(Exception):
 class CoreParser(GenericParser,
                  numbers.NumberGrammarMixin,
                  english.EnglishGrammarMixin,
-                 yesno.YesNoGrammarMixin):
+                 yesno.YesNoGrammarMixin,
+                 camelcase.CamelCaseMixin,
+                 shell.ShellCmdMixin,
+                 emacs.EmacsMixin):
 
     terminals = []
 
