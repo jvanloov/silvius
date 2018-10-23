@@ -1,4 +1,5 @@
 from ast import AST
+from parse_utils import add_rules_for_terminals
 
 class EnglishGrammarMixin(object):
 
@@ -12,6 +13,8 @@ class EnglishGrammarMixin(object):
         '''
             english ::= word ANY
         '''
+        if(args[1].type != 'ANY'):
+            return AST('sequence', [args[1].type ])
         return AST('sequence', [ args[1].extra ])
 
     def p_word_sentence(self, args):

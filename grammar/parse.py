@@ -1,5 +1,6 @@
 # Parser, based on John Aycock's SPARK examples
 
+from sys import exit
 from spark import GenericParser
 from spark import GenericASTBuilder
 from ast import AST
@@ -64,39 +65,48 @@ class CoreParser(GenericParser,
     # We can work around this limitation by adding rules for terminals
     # that we want to allow; however, with many terminals this will
     # quickly become infeasible.
-    # The function and function decorator below work together to automate this.
+    # The function below, and the function decorator in parse_utils.py, work
+    # together to automate this.
     # (The decorator is needed to modify the docstring programmatically.)
 
     def install_terminal_rules(self):
-        # if we have a list of terminals available: walk all rules, and see
-        # if they were annotated with @add_rules_for_terminals. If so, we add
-        # new rules based on the template for that rule and the terminals.
+        # if we have a list of terminals available: collect all rules from this
+        # class and the base classes (= subgrammars). Loop over the rule
+        # functions; if they were annotated with @add_rules_for_terminals,
+        # we add new rules based on the template for that rule and the terminals.
         if len(self.terminals) > 0:
-            for item in CoreParser.__dict__:
-                if item.startswith("p_"):
-                    function = CoreParser.__dict__[item]
-                    try:
-                        # this will trigger an AttributeError
-                        # for functions that were not annotated:
-                        template = function._rule_template
-                        exclusions = function._exclusions
-                        for kw in set(self.terminals) - set(exclusions):
-                            function.__doc__ += \
-                                (template.format(kw) + "\n")
-                    except AttributeError:
-                        pass
-
-    # function decorator: adding @add_rules_for_termination("<rule_template>")
-    # before a function declaration will add the given rule template
-    # as a new attribute to the function.
-    # This is used to signal that for this function, we have to add a new rule
-    # for each terminal, so that the terminal can be used in the spoken text.
-    def add_rules_for_terminals(rule_template, exclusions=[]):
-        def add_attrs(func):
-            func._rule_template = rule_template
-            func._exclusions = exclusions
-            return func
-        return add_attrs
+            # collect all classes, and filter out rule functions (p_...)
+            # from their function dictionaries
+            base_classes = [base
+                            for base in CoreParser.__bases__
+                            if base.__name__ is not "GenericParser"]
+            base_classes += [CoreParser]
+            rule_data = []
+            for base_class in base_classes:
+                rule_data += [(rule_name, base_class)
+                              for rule_name in base_class.__dict__
+                              if "p_" in rule_name]
+            # detect duplicate rule names:
+            rule_names = [rule[0] for rule in rule_data]
+            duplicates = set([rule_name for rule_name in rule_names
+                              if rule_names.count(rule_name) > 1])
+            if len(duplicates) > 0:
+                print "You have duplicate rule names:", ", ".join(duplicates)
+                exit()
+            # Loop over all rules, and add the new rules from the
+            # terminal list if desired.
+            for (rule_name, base_class) in rule_data:
+                function = base_class.__dict__[rule_name]
+                try:
+                    # this will trigger an AttributeError
+                    # for functions that were not annotated:
+                    template = function._rule_template
+                    exclusions = function._exclusions
+                    for kw in set(self.terminals) - set(exclusions):
+                        function.__doc__ += \
+                                            (template.format(kw) + "\n")
+                except AttributeError:
+                    pass
 
 
     # this method will be called by any subgrammars that want
