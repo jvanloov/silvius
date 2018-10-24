@@ -6,6 +6,8 @@ from spark import GenericASTBuilder
 from ast import AST
 
 # subgrammars are loaded from the grammars/ subpackage
+from grammars import movement_editing
+from grammars import characters
 from grammars import numbers
 from grammars import english
 from grammars import yesno
@@ -19,17 +21,27 @@ class GrammaticalError(Exception):
     def __str__(self):
         return self.string
 
-# include the subgrammars as mixin classes. This makes all the rule
+# The CoreParser fulfills a coordinating role, and a skeleton
+# grammar that offers three functionalities:
+# 1) chaining of commands
+# 2) a repetition rule, to be used in subgrammars
+# 3) modifier keys
+# The coordinating role is to tie together all subgrammars into
+# the skeleton grammar, to form a complete grammar.
+# Subgrammars are included as mixin classes. This makes all the rule
 # functions accessible in the CoreParser (and the actual parser in
 # GenericParser), and allows the subgrammar classes to call
 # 'add_subgrammar' from their __init__ methods.
 class CoreParser(GenericParser,
+                 movement_editing.MovementEditingMixin,
+                 characters.CharacterMixin,
                  numbers.NumberGrammarMixin,
                  english.EnglishGrammarMixin,
                  yesno.YesNoGrammarMixin,
                  camelcase.CamelCaseMixin,
                  shell.ShellCmdMixin,
-                 emacs.EmacsMixin):
+                 emacs.EmacsMixin
+                 ):
 
     terminals = []
 
@@ -146,26 +158,10 @@ class CoreParser(GenericParser,
         '''
             single_command ::= letter
             single_command ::= sky_letter
-            single_command ::= movement
             single_command ::= character
-            single_command ::= editing
             single_command ::= modifiers
         '''
         return args[0]
-
-    def p_movement(self, args):
-        '''
-            movement ::= up     repeat
-            movement ::= down   repeat
-            movement ::= left   repeat
-            movement ::= right  repeat
-        '''
-        if args[1] != None:
-            return AST('repeat', [ args[1] ], [
-                AST('movement', [ args[0] ])
-            ])
-        else:
-            return AST('movement', [ args[0] ])
 
     def p_repeat(self, args):
         '''
@@ -176,125 +172,6 @@ class CoreParser(GenericParser,
             return args[0]
         else:
             return None
-
-
-    def p_sky_letter(self, args):
-        '''
-            sky_letter ::= sky letter
-        '''
-        ast = args[1]
-        ast.meta[0] = ast.meta[0].upper()
-        return ast
-
-    def p_letter(self, args):
-        '''
-            letter ::= arch
-            letter ::= bravo
-            letter ::= charlie
-            letter ::= delta
-            letter ::= eco
-            letter ::= echo
-            letter ::= fox
-            letter ::= golf
-            letter ::= hotel
-            letter ::= india
-            letter ::= julia
-            letter ::= kilo
-            letter ::= line
-            letter ::= mike
-            letter ::= november
-            letter ::= oscar
-            letter ::= papa
-            letter ::= queen
-            letter ::= romeo
-            letter ::= sierra
-            letter ::= tango
-            letter ::= uniform
-            letter ::= victor
-            letter ::= whiskey
-            letter ::= whisky
-            letter ::= xray
-            letter ::= expert
-            letter ::= yankee
-            letter ::= zulu
-        '''
-        if(args[0].type == 'expert'): args[0].type = 'x'
-        return AST('char', [ args[0].type[0] ])
-
-    def p_character(self, args):
-        '''
-            character ::= act
-            character ::= colon
-            character ::= semicolon
-            character ::= single quote
-            character ::= double quote
-            character ::= equal
-            character ::= space
-            character ::= tab
-            character ::= bang
-            character ::= hash
-            character ::= dollar
-            character ::= percent
-            character ::= carrot
-            character ::= ampersand
-            character ::= star
-            character ::= late
-            character ::= rate
-            character ::= minus
-            character ::= underscore
-            character ::= plus
-            character ::= backslash
-            character ::= dot
-            character ::= dit
-            character ::= slash
-            character ::= question
-            character ::= comma
-        '''
-        value = {
-            'act'   : 'Escape',
-            'colon' : 'colon',
-            'semicolon' : 'semicolon',
-            'single': 'apostrophe',
-            'double': 'quotedbl',
-            'equal' : 'equal',
-            'space' : 'space',
-            'tab'   : 'Tab',
-            'bang'  : 'exclam',
-            'hash'  : 'numbersign',
-            'dollar': 'dollar',
-            'percent': 'percent',
-            'carrot': 'caret',
-            'ampersand': 'ampersand',
-            'star': 'asterisk',
-            'late': 'parenleft',
-            'rate': 'parenright',
-            'minus': 'minus',
-            'underscore': 'underscore',
-            'plus': 'plus',
-            'backslash': 'backslash',
-            'dot': 'period',
-            'dit': 'period',
-            'slash': 'slash',
-            'question': 'question',
-            'comma': 'comma'
-        }
-        return AST('raw_char', [ value[args[0].type] ])
-
-    def p_editing(self, args):
-        '''
-            editing ::= slap        repeat
-            editing ::= scratch     repeat
-        '''
-        value = {
-            'slap'  : 'Return',
-            'scratch': 'BackSpace'
-        }
-        if args[1] != None:
-            return AST('repeat', [ args[1] ], [
-                AST('raw_char', [ value[args[0].type] ])
-            ])
-        else:
-            return AST('raw_char', [ value[args[0].type] ])
 
     def p_modifiers(self, args):
         '''
