@@ -14,6 +14,7 @@ from grammars import yesno
 from grammars import camelcase
 from grammars import shell
 from grammars import emacs
+from grammars import c_language
 
 class GrammaticalError(Exception):
     def __init__(self, string):
@@ -40,7 +41,8 @@ class CoreParser(GenericParser,
                  yesno.YesNoGrammarMixin,
                  camelcase.CamelCaseMixin,
                  shell.ShellCmdMixin,
-                 emacs.EmacsMixin
+                 emacs.EmacsMixin,
+                 c_language.C_LanguageMixin
                  ):
 
     terminals = []
@@ -198,8 +200,8 @@ class SingleInputParser(CoreParser):
         # tokens ('i', 'the',...) are prepended to the acual command,
         # try commenting the 'single_input' line, and uncommenting
         # the 'single_input_discard_junk' line.
-        CoreParser.__init__(self, 'single_input')
-        #CoreParser.__init__(self, 'single_input_discard_junk')
+        #CoreParser.__init__(self, 'single_input')
+        CoreParser.__init__(self, 'single_input_discard_junk')
         self.sleeping = False
 
     def p_sleep_commands(self, args):
