@@ -48,7 +48,7 @@ class MovementEditingMixin(object):
 
     def p_jump_cmd(self, args):
         '''
-            jump_cmd ::= jump
+            jump_cmd ::= try
         '''
         return AST('jump')
 
