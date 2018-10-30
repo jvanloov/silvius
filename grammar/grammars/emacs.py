@@ -25,7 +25,7 @@ class EmacsMixin(object):
             emacs_cmd ::= emacs_name grab
             emacs_cmd ::= emacs_name begin
             emacs_cmd ::= emacs_name and
-            emacs_cmd ::= emacs_name eat
+            emacs_cmd ::= emacs_name swallow
             emacs_cmd ::= emacs_name close
             emacs_cmd ::= emacs_name search
         '''
@@ -70,7 +70,7 @@ class EmacsMixin(object):
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'a'] ) ] ))
         elif args[1].type == 'and':  # 'end'
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'e'] ) ] ))
-        elif args[1].type == 'eat':
+        elif args[1].type == 'swallow':
             sequence.append(AST('raw_char', [ 'Escape'] ))
             sequence.append(AST("char", [ 'd'] ))
         elif args[1].type == 'close':
