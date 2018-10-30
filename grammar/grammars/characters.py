@@ -77,6 +77,8 @@ class CharacterMixin(object):
             character ::= slash
             character ::= question
             character ::= comma
+            character ::= lace
+            character ::= race
         '''
         value = {
             'act'   : 'Escape',
@@ -104,6 +106,8 @@ class CharacterMixin(object):
             'dit': 'period',
             'slash': 'slash',
             'question': 'question',
-            'comma': 'comma'
+            'comma': 'comma',
+            'lace': 'braceleft',
+            'race': 'braceright'
         }
         return AST('raw_char', [ value[args[0].type] ])

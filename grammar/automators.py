@@ -113,7 +113,9 @@ class CLIClickAutomator(Automator):
         'left'      : "kp:arrow-left",
         'right'     : "kp:arrow-right",
         'up'        : "kp:arrow-up",
-        'down'      : "kp:arrow-down"
+        'down'      : "kp:arrow-down",
+        'braceleft' : "t:'{'",
+        'braceright': "t:'}'",
     }
 
     def flush(self):
