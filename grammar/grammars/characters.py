@@ -81,8 +81,8 @@ class CharacterMixin(object):
             character ::= race
             character ::= look
             character ::= book
-            character ::= nook
-            character ::= shook
+            character ::= less
+            character ::= more
         '''
         value = {
             'act'   : 'Escape',
@@ -115,7 +115,7 @@ class CharacterMixin(object):
             'race': 'braceright',
             'look': 'bracketleft',
             'book': 'bracketright',
-            'nook': 'less',
-            'shook': 'greater'
+            'less': 'less',
+            'more': 'greater'
         }
         return AST('raw_char', [ value[args[0].type] ])
