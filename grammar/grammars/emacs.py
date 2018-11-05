@@ -28,6 +28,8 @@ class EmacsMixin(object):
             emacs_cmd ::= emacs_name swallow
             emacs_cmd ::= emacs_name close
             emacs_cmd ::= emacs_name search
+            emacs_cmd ::= emacs_name clear
+            emacs_cmd ::= emacs_name disappear
         '''
         sequence = []
         if args[1].type == 'scratch':
@@ -78,6 +80,10 @@ class EmacsMixin(object):
             sequence.append(AST('char', [ 'k'] ))
         elif args[1].type == 'search':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 's'] ) ] ))
+        elif args[1].type == 'clear':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'k'] ) ] ))
+        elif args[1].type == 'disappear':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'w'] ) ] ))
         return AST("chain", None, sequence)
 
     def p_emacs_name(self, args):
