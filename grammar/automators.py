@@ -116,6 +116,10 @@ class CLIClickAutomator(Automator):
         'down'      : "kp:arrow-down",
         'braceleft' : "t:'{'",
         'braceright': "t:'}'",
+        'bracketleft': "t:'['",
+        'bracketright': "t:']'",
+        'less'      : "t:'<'",
+        'greater'   : "t:'>'",
     }
 
     def flush(self):
@@ -244,6 +248,18 @@ class NirCmdAutomator(Automator):
                        'english_us': '8' },
         '9':         { 'belgian': 'shift+9',
                        'english_us': '9' },
+        'braceleft': { 'belgian': 'ctrl+alt+0x39',
+                       'english_us': 'shift+0xdb' },
+        'braceright':{ 'belgian': 'ctrl+alt+0x30',
+                       'english_us': 'shift+0xdd' },
+        'bracketleft': { 'belgian': 'ctrl+alt+0xdd',
+                         'english_us': '0xdb' },
+        'bracketright':{ 'belgian': 'ctrl+alt+0xba',
+                         'english_us': '0xdd' },
+        'less':      { 'belgian': '<',
+                       'english_us': '<' },
+        'greater':   { 'belgian': '>',
+                       'english_us': '>' },
     }
 
     def transform_key(self, k):

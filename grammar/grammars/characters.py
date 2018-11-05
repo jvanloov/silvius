@@ -23,7 +23,7 @@ class CharacterMixin(object):
             letter ::= eco
             letter ::= echo
             letter ::= fox
-            letter ::= golf
+            letter ::= greece
             letter ::= hotel
             letter ::= india
             letter ::= julia
@@ -77,8 +77,12 @@ class CharacterMixin(object):
             character ::= slash
             character ::= question
             character ::= comma
-            character ::= lace
+            character ::= chase
             character ::= race
+            character ::= look
+            character ::= book
+            character ::= nook
+            character ::= shook
         '''
         value = {
             'act'   : 'Escape',
@@ -107,7 +111,11 @@ class CharacterMixin(object):
             'slash': 'slash',
             'question': 'question',
             'comma': 'comma',
-            'lace': 'braceleft',
-            'race': 'braceright'
+            'chase': 'braceleft',
+            'race': 'braceright',
+            'look': 'bracketleft',
+            'book': 'bracketright',
+            'nook': 'less',
+            'shook': 'greater'
         }
         return AST('raw_char', [ value[args[0].type] ])
