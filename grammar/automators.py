@@ -256,10 +256,10 @@ class NirCmdAutomator(Automator):
                          'english_us': '0xdb' },
         'bracketright':{ 'belgian': 'ctrl+alt+0xba',
                          'english_us': '0xdd' },
-        'less':      { 'belgian': '<',
-                       'english_us': '<' },
-        'greater':   { 'belgian': '>',
-                       'english_us': '>' },
+        'less':      { 'belgian': '0xe2',
+                       'english_us': 'shift+0xbc' },
+        'greater':   { 'belgian': 'shift+0xe2',
+                       'english_us': 'shift+0xbe' },
     }
 
     def transform_key(self, k):
