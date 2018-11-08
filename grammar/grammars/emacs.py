@@ -30,7 +30,16 @@ class EmacsMixin(object):
             emacs_cmd ::= emacs_name search
             emacs_cmd ::= emacs_name clear
             emacs_cmd ::= emacs_name disappear
-        '''
+            emacs_cmd ::= emacs_name go
+        
+            emacs_cmd ::= emacs_name five
+            emacs_cmd ::= emacs_name ten
+            emacs_cmd ::= emacs_name fifteen
+            emacs_cmd ::= emacs_name twenty
+
+            emacs_cmd ::= emacs_name indent
+            emacs_cmd ::= emacs_name refresh
+       '''
         sequence = []
         if args[1].type == 'scratch':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'x'] ) ] ))
@@ -84,6 +93,31 @@ class EmacsMixin(object):
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'k'] ) ] ))
         elif args[1].type == 'disappear':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'w'] ) ] ))
+        elif args[1].type == 'go':
+            sequence.append(AST('raw_char', [ 'Escape'] ))
+            sequence.append(AST("char", [ 'g'] ))
+            sequence.append(AST("char", [ 'g'] ))
+        elif args[1].type == 'five':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'u'] ) ] ))
+            sequence.append(AST("char", [ '5'] ))
+        elif args[1].type == 'ten':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'u'] ) ] ))
+            sequence.append(AST("char", [ '1'] ))
+            sequence.append(AST("char", [ '0'] ))
+        elif args[1].type == 'fifteen':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'u'] ) ] ))
+            sequence.append(AST("char", [ '1'] ))
+            sequence.append(AST("char", [ '5'] ))
+        elif args[1].type == 'twenty':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'u'] ) ] ))
+            sequence.append(AST("char", [ '2'] ))
+            sequence.append(AST("char", [ '0'] ))
+        elif args[1].type == 'indent':
+            sequence.append(AST('mod_plus_key', [ 'ctrl', 'alt' ], [ AST("raw_char", [ 'backslash'] ) ] ))
+        elif args[1].type == 'refresh':
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'x'] ) ] ))
+            sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'v'] ) ] ))
+            sequence.append(AST('raw_char', [ 'Return'] ))
         return AST("chain", None, sequence)
 
     def p_emacs_name(self, args):
