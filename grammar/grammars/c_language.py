@@ -17,7 +17,10 @@ class C_LanguageMixin(object):
             sequence.append(AST("raw_char", [ 'semicolon'] ))
         elif args[1].type == 'block':
             sequence.append(AST('raw_char', [ 'braceleft'] ))
+            sequence.append(AST('raw_char', [ 'Return'] ))
+            sequence.append(AST('raw_char', [ 'Return'] ))
             sequence.append(AST('raw_char', [ 'braceright' ] ))
+            sequence.append(AST('movement', [ Token('up') ] ))
         return AST("chain", None, sequence)
 
     def p_c_language_cmd(self, args):
