@@ -89,6 +89,7 @@ class CLIClickAutomator(Automator):
         'quotedbl'  : "t:'\"'",
         'period'    : "t:'.'",
         'minus'     : "t:'-'",
+        '-'         : "t:'-'",   # if - appears in a sequence, it will be this and not 'minus'
         'equal'     : "t:'='",
         'colon'     : "t:':'",
         'semicolon' : "t:';'",
@@ -265,6 +266,8 @@ class NirCmdAutomator(Automator):
     def transform_key(self, k):
         if k.lower() in self.keymaps:
             return self.keymaps[k.lower()][self.keymap].lower()
+        elif k.isupper():
+            return 'shift+'+k.lower()
         else:
             return k    
     

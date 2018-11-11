@@ -37,7 +37,7 @@ class EmacsMixin(object):
             emacs_cmd ::= emacs_name fifteen
             emacs_cmd ::= emacs_name twenty
 
-            emacs_cmd ::= emacs_name indent
+            emacs_cmd ::= emacs_name beautify
             emacs_cmd ::= emacs_name refresh
        '''
         sequence = []
@@ -99,21 +99,26 @@ class EmacsMixin(object):
             sequence.append(AST("char", [ 'g'] ))
         elif args[1].type == 'five':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'u'] ) ] ))
-            sequence.append(AST("char", [ '5'] ))
+            sequence.append(AST("raw_char", [ '5'] ))
         elif args[1].type == 'ten':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'u'] ) ] ))
-            sequence.append(AST("char", [ '1'] ))
-            sequence.append(AST("char", [ '0'] ))
+            sequence.append(AST("raw_char", [ '1'] ))
+            sequence.append(AST("raw_char", [ '0'] ))
         elif args[1].type == 'fifteen':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'u'] ) ] ))
-            sequence.append(AST("char", [ '1'] ))
-            sequence.append(AST("char", [ '5'] ))
+            sequence.append(AST("raw_char", [ '1'] ))
+            sequence.append(AST("raw_char", [ '5'] ))
         elif args[1].type == 'twenty':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'u'] ) ] ))
-            sequence.append(AST("char", [ '2'] ))
-            sequence.append(AST("char", [ '0'] ))
-        elif args[1].type == 'indent':
-            sequence.append(AST('mod_plus_key', [ 'ctrl', 'alt' ], [ AST("raw_char", [ 'backslash'] ) ] ))
+            sequence.append(AST("raw_char", [ '2'] ))
+            sequence.append(AST("raw_char", [ '0'] ))
+        elif args[1].type == 'beautify':
+            #sequence.append(AST('mod_plus_key', [ 'ctrl', 'alt' ], [ AST("raw_char", [ 'backslash'] ) ] ))
+            sequence.append(AST('raw_char', [ 'Escape'] ))
+            sequence.append(AST('char', [ 'x' ] ))
+            sequence.append(AST('sequence', [ 'inde-reg' ] ))   # will be expanded to indent-region by the "tab"
+            sequence.append(AST('raw_char', [ 'Tab'] ))
+            sequence.append(AST('raw_char', [ 'Return'] ))
         elif args[1].type == 'refresh':
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'x'] ) ] ))
             sequence.append(AST('mod_plus_key', [ 'ctrl' ], [ AST("char", [ 'v'] ) ] ))

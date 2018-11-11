@@ -1,4 +1,5 @@
 from ast import AST
+from scan import Token
 
 
 class C_LanguageMixin(object):

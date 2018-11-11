@@ -44,4 +44,4 @@
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress shift+4 shift+0 shift+2 shift+8 shift+1 shift+5`
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress w i n d o w spc s e n t e n c e spc p h r a s e`
 `C:\Tools\nircmd-x64\nircmd.exe sendkeypress shift+h e l l o spc t h e r e 0xbc spc h o w spc a r e spc y o u shift+0xbc`
-`C:\Tools\nircmd-x64\nircmd.exe sendkeypress shift+0xdb shift+0xdd 0xdb 0xdd < >`
+`C:\Tools\nircmd-x64\nircmd.exe sendkeypress ctrl+alt+0x39 ctrl+alt+0x30 ctrl+alt+0xdd ctrl+alt+0xba 0xe2 shift+0xe2`
