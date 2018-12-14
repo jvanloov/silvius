@@ -3,7 +3,10 @@
 def install_keywords(parser):
     global keywords
     keywords = parser.terminals
-
+    global noise
+    noise = set([x.lower() for x in ['[BREATH]', '[COUGH]', '[NOISE]', \
+                                     '[SMACK]', '[UH]', '[UM]', '<unk>']])
+     
 class Token:
     def __init__(self, type, wordno=-1, extra=''):
         self.type = type
@@ -22,6 +25,8 @@ def scan(line):
         wordno += 1
         if(t in keywords):
             tokens.append(Token(t, wordno))
+        elif(t in noise):
+             pass
         else:
             tokens.append(Token('ANY', wordno, t))
     tokens.append(Token('END'))
