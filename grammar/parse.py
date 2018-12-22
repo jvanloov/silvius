@@ -44,6 +44,7 @@ class CoreParser(GenericParser):
             single_command ::= english
             single_command ::= word_sentence
             single_command ::= word_phrase
+            single_command ::= modifiers_hold
         '''
         return args[0]
 
@@ -347,6 +348,25 @@ class CoreParser(GenericParser):
         else:
             return AST('mod_plus_key', [ value[args[0].type] ], [ args[1] ] )
 
+    def p_modifiers_hold(self, args):
+        '''
+            modifiers_hold ::= press alt
+            modifiers_hold ::= press alternative
+            modifiers_hold ::= press control
+            modifiers_hold ::= press command
+            modifiers_hold ::= release
+        '''
+        value = {
+            'control' : 'ctrl',
+            'alt' : 'alt',
+            'alternative' : 'alt',
+            'command' : 'cmd'
+        }
+        if (args[0].type == 'release'):
+            return AST('mod_release', [ 'alt', 'ctrl' ])
+        else:
+            return AST('mod_press', [ value[args[1].type] ])
+            
     def p_english(self, args):
         '''
             english ::= word ANY

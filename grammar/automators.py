@@ -158,7 +158,17 @@ class CLIClickAutomator(Automator):
         command += ','.join(mods)
         self.add_keystrokes(command)
 
+    def mod_press(self, mods):
+        command = "w:10 kd:"
+        command += ','.join(mods)
+        self.add_keystrokes(command)
 
+    def mod_release(self, mods):
+        command = "w:10 ku:"
+        command += ','.join(mods)
+        self.add_keystrokes(command)
+        
+        
 class NirCmdAutomator(Automator):
 
     # nircmd.exe transformations used here are keyboard layout specific;

@@ -45,6 +45,10 @@ class ExecuteCommands(GenericASTTraversal):
         self.automator.raw_key(node.meta[0])
     def n_mod_plus_key(self, node):
         self.automator.mod_plus_key(node.meta, node.children[0].meta[0])
+    def n_mod_press(self,node):
+        self.automator.mod_press(node.meta)
+    def n_mod_release(self,node):
+        self.automator.mod_release(node.meta)
     def n_movement(self, node):
         self.automator.key_movement(node.meta[0].type)
     def n_sequence(self, node):
